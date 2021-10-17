@@ -175,7 +175,7 @@ create_iam_role()
 create_img()
 {
 	local _bsdrd=${_WRKDIR}/bsd.rd _rdextract=${_WRKDIR}/bsd.rd.extract
-	local _rdmnt=${_WRKDIR}/rdmnt _vndev _compress=0 
+	local _rdgz=false _rdmnt=${_WRKDIR}/rdmnt _vndev
 
 	create_install_site_disk
 
@@ -185,19 +185,12 @@ create_img()
 	ftp -MV -o ${_bsdrd} ${MIRROR}/${RELEASE}/${ARCH}/bsd.rd
 
 	
-	# 6.9 onwards has a compressed rd file
-	# bsd.rd: gzip compressed data, max compression, from Unix
-	#
-	set +e
-	file ${_bsdrd} | grep "gzip compressed data"
-	if [ $? = "0" ]; then
-		pr_title "decompressing bsd.rd"
-		# bsd.rd is compressed, decompress it so rdsetroot works
-		_compress=1
+	# 6.9 onwards uses a compressed rd file
+	if [[ $(file -bi ${_bsdrd}) == "application/x-gzip" ]]; then
 		mv ${_bsdrd} ${_bsdrd}.gz
 		gunzip ${_bsdrd}.gz
+		_rdgz=true
 	fi
-	set -e
 
 	rdsetroot -x ${_bsdrd} ${_rdextract}
 	_vndev=$(vnconfig ${_rdextract})
@@ -212,6 +205,11 @@ create_img()
 	if [ "${_compress}" = "1" ]; then	
 		pr_title "recompressing bsd.rd"
 		# 6.9 onwards
+		gzip ${_bsdrd}
+		mv ${_bsdrd}.gz ${_bsdrd}
+	fi
+
+	if ${_rdgz}; then
 		gzip ${_bsdrd}
 		mv ${_bsdrd}.gz ${_bsdrd}
 	fi
@@ -239,6 +237,10 @@ create_install_site()
 	cat <<-'EOF' >>${_WRKDIR}/install.site
 	chown root:bin /usr/local/libexec/ec2-init
 	chmod 0555 /usr/local/libexec/ec2-init
+
+	# XXX we should leave "inet autoconf" as set by the installer but it
+	# seems dhcpleased doesn't play well with AWS+hostname.if(5) command
+	echo '!/sbin/dhclient \$if' >/etc/hostname.vio0
 
 	echo "!/usr/local/libexec/ec2-init" >>/etc/hostname.vio0
 	cp -p /etc/hostname.vio0 /etc/hostname.xnf0
