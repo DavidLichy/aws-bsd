@@ -294,7 +294,7 @@ create_install_site_disk()
 	pr_title "downloading ec2-init"
 	install -d ${_WRKDIR}/usr/local/libexec/
 	ftp -o ${_WRKDIR}/usr/local/libexec/ec2-init \
-		https://raw.githubusercontent.com/ajacoutot/aws-openbsd/master/ec2-init.sh
+		https://raw.githubusercontent.com/DavidLichy/aws-bsd/ec2-init-logging/ec2-init.sh
 
 	pr_title "storing siteXX.tgz into install_site disk"
 	cd ${_WRKDIR} && tar czf \

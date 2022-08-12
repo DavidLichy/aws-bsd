@@ -83,7 +83,7 @@ ec2_userdata()
 	local _script="$(mktemp -p /tmp -t aws-user-data.XXXXXXXXXX)"
 	mock user-data >${_script} && [[ $(head -1 ${_script}) == @(#!*) ]] ||
 		{ rm ${_script}; return 0; }
-	chmod u+x ${_script} && env -i /bin/sh -c ${_script} && rm ${_script}
+	chmod u+x ${_script} && env -i /bin/sh -c ${_script}
 }
 
 mock()
