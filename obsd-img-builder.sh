@@ -295,7 +295,8 @@ create_install_site_disk()
 	install -d ${_WRKDIR}/usr/local/libexec/
 	ftp -o ${_WRKDIR}/usr/local/libexec/ec2-init \
 		https://raw.githubusercontent.com/DavidLichy/aws-bsd/ec2-init-logging/ec2-init.sh
-
+	mkdir ${_WRKDIR}/home/ec2-user/scripts
+	cp ./scripts/* ${_WRKDIR}/home/ec2-user/scripts/
 	pr_title "storing siteXX.tgz into install_site disk"
 	cd ${_WRKDIR} && tar czf \
 		${_sitemnt}/${_rel}/${ARCH}/site${_relint}.tgz ./install.site \
