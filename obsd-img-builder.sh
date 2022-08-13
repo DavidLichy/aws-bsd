@@ -281,20 +281,32 @@ create_install_site_disk()
 	mount /dev/${_vndev}a ${_sitemnt}
 	install -d ${_sitemnt}/${_rel}/${ARCH}
 
-	pr_title "downloading installation ISO"
-	while ! ftp -o ${_WRKDIR}/installXX.iso \
-		${MIRROR}/${RELEASE}/${ARCH}/install${_relint}.iso; do
-		# in case we're running an X.Y snapshot while X.Z is out;
-		# (e.g. running on 6.4-current and installing 6.5-beta)
-		${_retrydl} || pr_err "cannot download installation ISO"
-		_relint=$((_relint+1))
-		_retrydl=false
-	done
+
+
+	EXISTING_IMAGE_FOLDER="./images/${RELEASE}/${ARCH}"
+	EXISTING_IMAGE_PATH=${EXISTING_IMAGE_FOLDER}/installXX.iso
+
+	if ${USE_EXISTING} && test -f ${EXISTING_IMAGE_PATH}; then
+		pr_title "installation ISO exists copying to working dir"
+		cp ${EXISTING_IMAGE_FOLDER}/installXX.iso ${_WRKDIR}/
+	else
+		pr_title "No iso exists downloading installation ISO"
+		while ! ftp -o ${_WRKDIR}/installXX.iso \
+			${MIRROR}/${RELEASE}/${ARCH}/install${_relint}.iso; do
+			# in case we're running an X.Y snapshot while X.Z is out;
+			# (e.g. running on 6.4-current and installing 6.5-beta)
+			${_retrydl} || pr_err "cannot download installation ISO"
+			_relint=$((_relint+1))
+			_retrydl=false
+		done
+		mkdir -p ${EXISTING_IMAGE_FOLDER}/
+		cp ${_WRKDIR}/installXX.iso ${EXISTING_IMAGE_FOLDER}/
+	fi
 
 	pr_title "downloading ec2-init"
 	install -d ${_WRKDIR}/usr/local/libexec/
 	ftp -o ${_WRKDIR}/usr/local/libexec/ec2-init \
-		https://raw.githubusercontent.com/ajacoutot/aws-openbsd/master/ec2-init.sh
+		https://raw.githubusercontent.com/DavidLichy/aws-openbsd/master/ec2-init.sh
 
 	pr_title "storing siteXX.tgz into install_site disk"
 	cd ${_WRKDIR} && tar czf \
@@ -365,12 +377,13 @@ usage()
        -m \"install mirror\" -- defaults to installurl(5) or \"https://cdn.openbsd.org/pub/OpenBSD\"
        -n -- only create a RAW image (don't convert to an AMI nor push to AWS)
        -r \"release\" -- e.g \"6.5\"; default to \"snapshots\"
-       -s \"image size in GB\" -- default to \"12\""
+       -s \"image size in GB\" -- default to \"12\"
+       -e  -- use existing base image if downloaded"
 
 	return 1
 }
 
-while getopts a:d:i:m:nr:s: arg; do
+while getopts a:d:i:m:nr:s:e arg; do
 	case ${arg} in
 	a)	ARCH="${OPTARG}" ;;
 	d)	DESCR="${OPTARG}" ;;
@@ -379,6 +392,7 @@ while getopts a:d:i:m:nr:s: arg; do
 	n)	CREATE_AMI=false ;;
 	r)	RELEASE="${OPTARG}" ;;
 	s)	IMGSIZE="${OPTARG}" ;;
+	e)  USE_EXISTING=true ;;
 	*)	usage ;;
 	esac
 done
@@ -397,6 +411,7 @@ fi
 
 ARCH=${ARCH:-amd64}
 CREATE_AMI=${CREATE_AMI:-true}
+USE_EXISTING=${USE_EXISTING:-false}
 IMGSIZE=${IMGSIZE:-12}
 RELEASE=${RELEASE:-snapshots}
 
