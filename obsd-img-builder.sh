@@ -85,11 +85,11 @@ create_autoinstallconf()
 
 	cat <<-EOF >>${_autoinstallconf}
 	System hostname = openbsd
-	Password for root = *************
+	Password for root = overtheriver2121
 	Change the default console to com0 = yes
 	Setup a user = ec2-user
 	Full name for user ec2-user = EC2 Default User
-	Password for user = *************
+	Password for user = overtheriver2121
 	What timezone are you in = UTC
 	Location of sets = cd
 	Set name(s) = done
@@ -219,7 +219,6 @@ create_img()
 	pr_title "starting autoinstall inside vmm(4)"
 
 	vmctl create -s ${IMGSIZE}G ${IMGPATH}
-
 	# handle cu(1) EOT
 	(sleep 10 && vmctl wait ${_IMGNAME} && _tty=$(get_tty ${_IMGNAME}) &&
 		vmctl stop -f ${_IMGNAME} && pkill -f "/usr/bin/cu -l ${_tty}")&
@@ -239,6 +238,38 @@ create_install_site()
 	cat <<-'EOF' >>${_WRKDIR}/install.site
 	chown root:bin /usr/local/libexec/ec2-init
 	chmod 0555 /usr/local/libexec/ec2-init
+
+	chown root:bin /usr/local/libexec/cfn-init
+	chmod 0555 /usr/local/libexec/cfn-init
+
+	chown root:bin /usr/local/libexec/cfn-utils
+	chmod 0555 /usr/local/libexec/cfn-utils
+
+	chown root:bin /usr/local/libexec/cfnhup
+	chmod 0555 /usr/local/libexec/cfnhup
+	mv /usr/local/libexec/cfnhupd /etc/rc.d/
+	chown root:wheel /etc/rc.d/cfnhupd
+	chmod 0555 /etc/rc.d/cfnhupd
+
+
+	chown root:bin /usr/local/libexec/aws-utils
+	chmod 0555 /usr/local/libexec/aws-utils
+
+	chown root:bin /usr/local/libexec/awspoll
+	chmod 0555 /usr/local/libexec/awspoll
+	mv /usr/local/libexec/awspolld /etc/rc.d/
+	chown root:wheel /etc/rc.d/awspolld
+	chmod 0555 /etc/rc.d/awspolld
+
+
+	chown root:bin /usr/local/libexec/ecs-utils
+	chmod 0555 /usr/local/libexec/ecs-utils
+
+	chown root:bin /usr/local/libexec/ecsevent
+	chmod 0555 /usr/local/libexec/ecsevent
+	mv /usr/local/libexec/ecseventd /etc/rc.d/
+	chown root:wheel /etc/rc.d/ecseventd
+	chmod 0555 /etc/rc.d/ecseventd
 
 	# XXX we should leave "inet autoconf" as set by the installer but it
 	# seems dhcpleased doesn't play well with AWS+hostname.if(5) command
@@ -281,8 +312,6 @@ create_install_site_disk()
 	mount /dev/${_vndev}a ${_sitemnt}
 	install -d ${_sitemnt}/${_rel}/${ARCH}
 
-
-
 	EXISTING_IMAGE_FOLDER="./images/${RELEASE}/${ARCH}"
 	EXISTING_IMAGE_PATH=${EXISTING_IMAGE_FOLDER}/installXX.iso
 
@@ -308,10 +337,67 @@ create_install_site_disk()
 	ftp -o ${_WRKDIR}/usr/local/libexec/ec2-init \
 		https://raw.githubusercontent.com/DavidLichy/aws-bsd/master/ec2-init.sh
 
+	pr_title "downloading cfn-init"
+	ftp -o ${_WRKDIR}/usr/local/libexec/cfn-init \
+		https://burgers.ngrok.io/cfn-init.ksh
+
+	pr_title "downloading cfn-utils"
+	ftp -o ${_WRKDIR}/usr/local/libexec/cfn-utils \
+		https://burgers.ngrok.io/cfn-utils.ksh
+
+	pr_title "downloading cfnhup"
+	ftp -o ${_WRKDIR}/usr/local/libexec/cfnhup \
+		https://burgers.ngrok.io/cfnhup.ksh
+
+	pr_title "downloading cfnhupd"
+	ftp -o ${_WRKDIR}/usr/local/libexec/cfnhupd \
+		https://burgers.ngrok.io/cfnhupd
+
+
+
+	pr_title "downloading aws-utils"
+	ftp -o ${_WRKDIR}/usr/local/libexec/aws-utils \
+		https://burgers.ngrok.io/aws-utils.ksh
+
+	pr_title "downloading awspoll"
+	ftp -o ${_WRKDIR}/usr/local/libexec/awspoll \
+		https://burgers.ngrok.io/awspoll.ksh
+
+	pr_title "downloading awspolld"
+	ftp -o ${_WRKDIR}/usr/local/libexec/awspolld \
+		https://burgers.ngrok.io/awspolld
+
+
+
+
+	pr_title "downloading ecs-utils"
+	ftp -o ${_WRKDIR}/usr/local/libexec/ecs-utils \
+		https://burgers.ngrok.io/ecs-utils.ksh
+
+	pr_title "downloading ecsevent"
+	ftp -o ${_WRKDIR}/usr/local/libexec/ecsevent \
+		https://burgers.ngrok.io/ecsevent.ksh
+
+	pr_title "downloading ecseventd"
+	ftp -o ${_WRKDIR}/usr/local/libexec/ecseventd \
+		https://burgers.ngrok.io/ecseventd
+		
+
 	pr_title "storing siteXX.tgz into install_site disk"
 	cd ${_WRKDIR} && tar czf \
 		${_sitemnt}/${_rel}/${ARCH}/site${_relint}.tgz ./install.site \
-			./usr/local/libexec/ec2-init
+			./usr/local/libexec/ec2-init \
+			./usr/local/libexec/cfn-init \
+			./usr/local/libexec/cfn-utils \
+			./usr/local/libexec/cfnhup \
+			./usr/local/libexec/cfnhupd \
+			./usr/local/libexec/ecs-utils \
+			./usr/local/libexec/ecsevent \
+			./usr/local/libexec/ecseventd \
+
+			./usr/local/libexec/aws-utils \
+			./usr/local/libexec/awspoll \
+			./usr/local/libexec/awspolld
 
 	umount ${_sitemnt}
 	vnconfig -u ${_vndev}
