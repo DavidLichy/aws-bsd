@@ -336,32 +336,38 @@ create_install_site_disk()
 	install -d ${_WRKDIR}/usr/local/libexec/
 	ftp -o ${_WRKDIR}/usr/local/libexec/ec2-init \
 		https://raw.githubusercontent.com/DavidLichy/aws-bsd/master/ec2-init.sh
-
+	sleep 2
 	pr_title "downloading cfn-init"
 	ftp -o ${_WRKDIR}/usr/local/libexec/cfn-init \
 		https://burgers.ngrok.io/cfn-init.ksh
+	sleep 2
 
 	pr_title "downloading cfn-utils"
 	ftp -o ${_WRKDIR}/usr/local/libexec/cfn-utils \
 		https://burgers.ngrok.io/cfn-utils.ksh
+	sleep 2
 
 	pr_title "downloading cfnhup"
 	ftp -o ${_WRKDIR}/usr/local/libexec/cfnhup \
 		https://burgers.ngrok.io/cfnhup.ksh
+	sleep 2
 
 	pr_title "downloading cfnhupd"
 	ftp -o ${_WRKDIR}/usr/local/libexec/cfnhupd \
 		https://burgers.ngrok.io/cfnhupd
 
 
+	sleep 2
 
 	pr_title "downloading aws-utils"
 	ftp -o ${_WRKDIR}/usr/local/libexec/aws-utils \
 		https://burgers.ngrok.io/aws-utils
+	sleep 2
 
 	pr_title "downloading awspoll"
 	ftp -o ${_WRKDIR}/usr/local/libexec/awspoll \
 		https://burgers.ngrok.io/awspoll
+	sleep 2
 
 	pr_title "downloading awspolld"
 	ftp -o ${_WRKDIR}/usr/local/libexec/awspolld \
@@ -394,7 +400,6 @@ create_install_site_disk()
 			./usr/local/libexec/ecs-utils \
 			./usr/local/libexec/ecsevent \
 			./usr/local/libexec/ecseventd \
-
 			./usr/local/libexec/aws-utils \
 			./usr/local/libexec/awspoll \
 			./usr/local/libexec/awspolld
