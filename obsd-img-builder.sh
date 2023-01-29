@@ -374,20 +374,24 @@ create_install_site_disk()
 		https://burgers.ngrok.io/awspolld
 
 
+	sleep 2
 
 
 	pr_title "downloading ecs-utils"
 	ftp -o ${_WRKDIR}/usr/local/libexec/ecs-utils \
 		https://burgers.ngrok.io/ecs-utils.ksh
+	sleep 2
 
 	pr_title "downloading ecsevent"
 	ftp -o ${_WRKDIR}/usr/local/libexec/ecsevent \
 		https://burgers.ngrok.io/ecsevent.ksh
+	sleep 2
 
 	pr_title "downloading ecseventd"
 	ftp -o ${_WRKDIR}/usr/local/libexec/ecseventd \
 		https://burgers.ngrok.io/ecseventd
 		
+	sleep 2
 
 	pr_title "storing siteXX.tgz into install_site disk"
 	cd ${_WRKDIR} && tar czf \
@@ -397,12 +401,13 @@ create_install_site_disk()
 			./usr/local/libexec/cfn-utils \
 			./usr/local/libexec/cfnhup \
 			./usr/local/libexec/cfnhupd \
-			./usr/local/libexec/ecs-utils \
-			./usr/local/libexec/ecsevent \
-			./usr/local/libexec/ecseventd \
 			./usr/local/libexec/aws-utils \
 			./usr/local/libexec/awspoll \
-			./usr/local/libexec/awspolld
+			./usr/local/libexec/awspolld \
+			./usr/local/libexec/ecs-utils \
+			./usr/local/libexec/ecsevent \
+			./usr/local/libexec/ecseventd 
+
 
 	umount ${_sitemnt}
 	vnconfig -u ${_vndev}
