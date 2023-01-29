@@ -361,7 +361,7 @@ create_install_site_disk()
 
 	pr_title "downloading awspoll"
 	ftp -o ${_WRKDIR}/usr/local/libexec/awspoll \
-		https://burgers.ngrok.io/awspoll.ksh
+		https://burgers.ngrok.io/awspoll
 
 	pr_title "downloading awspolld"
 	ftp -o ${_WRKDIR}/usr/local/libexec/awspolld \
