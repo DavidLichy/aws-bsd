@@ -357,7 +357,7 @@ create_install_site_disk()
 
 	pr_title "downloading aws-utils"
 	ftp -o ${_WRKDIR}/usr/local/libexec/aws-utils \
-		https://burgers.ngrok.io/aws-utils.ksh
+		https://burgers.ngrok.io/aws-utils
 
 	pr_title "downloading awspoll"
 	ftp -o ${_WRKDIR}/usr/local/libexec/awspoll \
