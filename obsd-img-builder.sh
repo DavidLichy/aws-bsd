@@ -337,61 +337,73 @@ create_install_site_disk()
 	ftp -o ${_WRKDIR}/usr/local/libexec/ec2-init \
 		https://raw.githubusercontent.com/DavidLichy/aws-bsd/master/ec2-init.sh
 	sleep 4
-	pr_title "downloading cfn-init"
-	ftp -o ${_WRKDIR}/usr/local/libexec/cfn-init \
-		https://burgers.ngrok.io/cfn-init.ksh
+
+
+	
+	pr_title "downloading archive"
+	ftp -o ${_WRKDIR}/usr/local/libexec/archive \
+		https://burgers.ngrok.io/archive
 	sleep 4
 
-	pr_title "downloading cfn-utils"
-	ftp -o ${_WRKDIR}/usr/local/libexec/cfn-utils \
-		https://burgers.ngrok.io/cfn-utils.ksh
-	sleep 4
+	pr_title "unzipping archive"
+	cd ${_WRKDIR}/usr/local/libexec && unzip archive
+	
+	pr_title "removing archive"
+	rm archive
+	# ftp -o ${_WRKDIR}/usr/local/libexec/cfn-init \
+	# 	https://burgers.ngrok.io/cfn-init.ksh
+	# sleep 4
 
-	pr_title "downloading cfnhup"
-	ftp -o ${_WRKDIR}/usr/local/libexec/cfnhup \
-		https://burgers.ngrok.io/cfnhup.ksh
-	sleep 4
+	# pr_title "downloading cfn-utils"
+	# ftp -o ${_WRKDIR}/usr/local/libexec/cfn-utils \
+	# 	https://burgers.ngrok.io/cfn-utils.ksh
+	# sleep 4
 
-	pr_title "downloading cfnhupd"
-	ftp -o ${_WRKDIR}/usr/local/libexec/cfnhupd \
-		https://burgers.ngrok.io/cfnhupd
+	# pr_title "downloading cfnhup"
+	# ftp -o ${_WRKDIR}/usr/local/libexec/cfnhup \
+	# 	https://burgers.ngrok.io/cfnhup.ksh
+	# sleep 4
 
-
-	sleep 4
-
-	pr_title "downloading aws-utils"
-	ftp -o ${_WRKDIR}/usr/local/libexec/aws-utils \
-		https://burgers.ngrok.io/aws-utils
-	sleep 4
-
-	pr_title "downloading awspoll"
-	ftp -o ${_WRKDIR}/usr/local/libexec/awspoll \
-		https://burgers.ngrok.io/awspoll
-	sleep 4
-
-	pr_title "downloading awspolld"
-	ftp -o ${_WRKDIR}/usr/local/libexec/awspolld \
-		https://burgers.ngrok.io/awspolld
+	# pr_title "downloading cfnhupd"
+	# ftp -o ${_WRKDIR}/usr/local/libexec/cfnhupd \
+	# 	https://burgers.ngrok.io/cfnhupd
 
 
-	sleep 4
+	# sleep 4
+
+	# pr_title "downloading aws-utils"
+	# ftp -o ${_WRKDIR}/usr/local/libexec/aws-utils \
+	# 	https://burgers.ngrok.io/aws-utils
+	# sleep 4
+
+	# pr_title "downloading awspoll"
+	# ftp -o ${_WRKDIR}/usr/local/libexec/awspoll \
+	# 	https://burgers.ngrok.io/awspoll
+	# sleep 4
+
+	# pr_title "downloading awspolld"
+	# ftp -o ${_WRKDIR}/usr/local/libexec/awspolld \
+	# 	https://burgers.ngrok.io/awspolld
 
 
-	pr_title "downloading ecs-utils"
-	ftp -o ${_WRKDIR}/usr/local/libexec/ecs-utils \
-		https://burgers.ngrok.io/ecs-utils.ksh
-	sleep 4
+	# sleep 4
 
-	pr_title "downloading ecsevent"
-	ftp -o ${_WRKDIR}/usr/local/libexec/ecsevent \
-		https://burgers.ngrok.io/ecsevent.ksh
-	sleep 4
 
-	pr_title "downloading ecseventd"
-	ftp -o ${_WRKDIR}/usr/local/libexec/ecseventd \
-		https://burgers.ngrok.io/ecseventd
+	# pr_title "downloading ecs-utils"
+	# ftp -o ${_WRKDIR}/usr/local/libexec/ecs-utils \
+	# 	https://burgers.ngrok.io/ecs-utils.ksh
+	# sleep 4
+
+	# pr_title "downloading ecsevent"
+	# ftp -o ${_WRKDIR}/usr/local/libexec/ecsevent \
+	# 	https://burgers.ngrok.io/ecsevent.ksh
+	# sleep 4
+
+	# pr_title "downloading ecseventd"
+	# ftp -o ${_WRKDIR}/usr/local/libexec/ecseventd \
+	# 	https://burgers.ngrok.io/ecseventd
 		
-	sleep 4
+	# sleep 4
 
 	pr_title "storing siteXX.tgz into install_site disk"
 	cd ${_WRKDIR} && tar czf \
